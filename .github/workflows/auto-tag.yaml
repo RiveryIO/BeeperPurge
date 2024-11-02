@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write  # Allow writing to the repo contents
+
 jobs:
   create-tag:
     if: github.event.pull_request.merged == true

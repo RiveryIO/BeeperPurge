@@ -1,0 +1,27 @@
+name: Auto Tag on Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  create-tag:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Get version from package
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(python -c "from src.beeperpurge.__version__ import __version__; print(__version__)")
+          echo "version=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+          
+      - name: Create and push tag
+        run: |
+          git tag "v${{ steps.get_version.outputs.version }}"
+          git push origin "v${{ steps.get_version.outputs.version }}"

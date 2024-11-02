@@ -47,5 +47,5 @@ jobs:
             
       - name: Create and push tag
         run: |
-          git tag "v${{ steps.get_version_from_file.outputs.version }}"
-          git push origin "v${{ steps.get_version_from_file.outputs.version }}"
+          git tag "${{ steps.get_version_from_file.outputs.version }}"
+          git push origin "${{ steps.get_version_from_file.outputs.version }}"

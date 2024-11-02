@@ -151,7 +151,7 @@ class HighThroughputDirCleaner:
                         })
                         self.update_stats(errors=1)
 
-                time.sleep(0.1)  # Prevent tight loop
+                queue.Queue.get(timeout=0.1)  # Prevent tight loop
 
         duration = time.time() - start_time
         log_with_context(self.logger, 'info', "Cleanup completed", {

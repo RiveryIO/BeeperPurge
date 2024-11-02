@@ -1,5 +1,7 @@
 # BeeperPurge 🧹
 
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/BeeperPurge/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/YOUR_USERNAME/BeeperPurge)
+
 High-throughput parallel file system cleaner designed for efficiently eliminating millions of old files simultaneously.
 
 ## Features

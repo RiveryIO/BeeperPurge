@@ -69,7 +69,7 @@ class HighThroughputDirCleaner:
     def process_file(self, file_path: Path) -> None:
         """Process a single file and purge if too old."""
         try:
-            print(f"Processing: {file_path.name}")  # debug line
+            # print(f"Processing: {file_path.name}")  # debug line
             stat = file_path.lstat() if file_path.is_symlink() else file_path.stat()
             self.update_stats(files_processed=1)
 

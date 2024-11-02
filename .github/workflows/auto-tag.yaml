@@ -26,7 +26,7 @@ jobs:
             DRY_RUN: true # don't actually create tag, I want to create it after updating the python version file
 
       - name: Update __version__.py
-        run: echo "__version__ = \"${{ steps.get_version.outputs.new_tag }}\"" > srv/beeperpurge/__version__.py
+        run: echo "__version__ = \"${{ steps.get_version.outputs.new_tag }}\"" > src/beeperpurge/__version__.py
 
       - name: Commit version update
         uses: EndBug/add-and-commit@v9

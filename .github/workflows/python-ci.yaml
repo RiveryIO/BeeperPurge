@@ -38,7 +38,8 @@ jobs:
         pytest -v
 
     - name: Upload coverage
-      if: matrix.python-version == '3.11'
+      if: matrix.python-version == '3.11' && github.event_name != 'pull_request'
       uses: codecov/codecov-action@v3
-      with:
-        fail_ci_if_error: true
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      continue-on-error: true

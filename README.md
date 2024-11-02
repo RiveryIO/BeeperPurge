@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/RiveryIO/BeeperPurge/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/RiveryIO/BeeperPurge)
 
-High-throughput parallel file system cleaner designed for efficiently eliminating millions of old files simultaneously.
+High-throughput parallel file system cleaner designed for efficiently eliminating millions of old files as close to simultaneously as possible.
 
 ## Features
 

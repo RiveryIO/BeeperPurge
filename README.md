@@ -20,11 +20,11 @@ High-throughput parallel file system cleaner designed for efficiently eliminatin
 docker pull ghcr.io/your-username/beeper-purge:latest
 
 # Always verify targets first with dry run
-docker run -v /path/to/clean:/data ghcr.io/your-username/beeper-purge:latest \
+docker run -v /path/to/clean:/data ghcr.io/RiveryIO/beeper-purge:latest \
     /data --dry-run --max-age-hours 36
 
 # Execute purge operation
-docker run -v /path/to/clean:/data ghcr.io/your-username/beeper-purge:latest \
+docker run -v /path/to/clean:/data ghcr.io/RiveryIO/beeper-purge:latest \
     /data --max-age-hours 36
 ```
 

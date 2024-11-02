@@ -14,14 +14,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          
-      - name: Get version from package
+      - uses: anothrNick/github-tag-action@1.36.0
+        name: Get next version
         id: get_version
-        run: |
-          PACKAGE_VERSION=$(python -c "from src.beeperpurge.__version__ import __version__; print(__version__)")
-          echo "version=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
-          
-      - name: Create and push tag
-        run: |
-          git tag "v${{ steps.get_version.outputs.version }}"
-          git push origin "v${{ steps.get_version.outputs.version }}"
+        env:
+            DEFAULT_BUMP: patch
+            WITH_V: true
+            DEFAULT_BRANCH: main
+            RELEASE_BRANCHES: main
+      - name: Update __version__.py
+        run: echo "__version__ = \"${{ steps.get_version.outputs.new_tag }}\"" > srv/beeperpurge/__version__.py

@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "beeperpurge"
+version = "0.1.0"
+description = "High-throughput parallel file system cleaner"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    { name = "Alon Almog", email = "alon.almog@rivery.io" }
+]
+dependencies = []
+
+[project.scripts]
+beeperpurge = "beeperpurge.cleaner:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["beeperpurge"]
+
+[tool.setuptools.dynamic]
+version = {attr = "beeperpurge.__version__.__version__"}
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "pytest-mock",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov --cov-report=term-missing"
+
+
+[tool.coverage.run]
+source = ["beeperpurge"]
+relative_files = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+]

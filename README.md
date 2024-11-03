@@ -15,9 +15,43 @@ High-throughput parallel file system cleaner designed for efficiently eliminatin
 - ⚙️ Configurable age thresholds
 - 🐳 Production-ready container with security best practices
 
-## Installation
+## Installation and Running
 
-### Using Docker (Recommended)
+### Running as a Kubernetes Cron Job (Recommended)
+To automate regular cleanups using beeper-purge in Kubernetes, you can configure a Kubernetes CronJob that runs at a specified interval. This example mounts an existing PersistentVolumeClaim (PVC) to the cron job container.
+
+Create a CronJob Manifest: Replace /data with your target path in the volume and adjust schedule and other parameters as needed.
+
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: beeper-purge-cron
+spec:
+  schedule: "0 0 * * *"  # Run daily at midnight
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: beeper-purge
+              image: ghcr.io/RiveryIO/beeper-purge:latest
+              args: 
+                - "/data"
+                - "--max-age-hours"
+                - "36"
+              volumeMounts:
+                - name: data-volume
+                  mountPath: /data
+          restartPolicy: OnFailure
+          volumes:
+            - name: data-volume
+              persistentVolumeClaim:
+                claimName: your-existing-pvc-name  # Replace with your PVC name
+
+```
+
+### Using Docker
 
 ```bash
 docker pull ghcr.io/RiveryIO/beeper-purge:latest

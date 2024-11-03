@@ -20,7 +20,7 @@ High-throughput parallel file system cleaner designed for efficiently eliminatin
 ### Using Docker (Recommended)
 
 ```bash
-docker pull ghcr.io/your-username/beeper-purge:latest
+docker pull ghcr.io/RiveryIO/beeper-purge:latest
 
 # Always verify targets first with dry run
 docker run -v /path/to/clean:/data ghcr.io/RiveryIO/beeper-purge:latest \

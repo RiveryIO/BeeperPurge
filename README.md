@@ -177,9 +177,9 @@ docker build -t beeper-purge .
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/enhancement`)
+2. Create your feature branch (`git checkout -b feat/enhancement`). Valid branch prefixes are feat,fix,chore.
 3. Commit your changes (`git commit -m 'Add enhancement'`)
-4. Push to the branch (`git push origin feature/enhancement`)
+4. Push to the branch (`git push origin feat/enhancement`)
 5. Open a Pull Request
 
 ## License

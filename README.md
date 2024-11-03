@@ -1,5 +1,6 @@
 # BeeperPurge 🧹
 
+[![Python Tests on Release branch (main)](https://github.com/RiveryIO/BeeperPurge/actions/workflows/python-ci-main.yaml/badge.svg?branch=main)](https://github.com/RiveryIO/BeeperPurge/actions/workflows/python-ci-main.yaml)
 [![codecov](https://codecov.io/gh/RiveryIO/BeeperPurge/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/RiveryIO/BeeperPurge)
 
 High-throughput parallel file system cleaner designed for efficiently eliminating millions of old files as close to simultaneously as possible.

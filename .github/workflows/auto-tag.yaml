@@ -34,13 +34,19 @@ jobs:
       - name: Update __init__.py
         run: echo "__version__ = \"${{ steps.get_version.outputs.new_tag }}\"" > src/beeperpurge/__init__.py
 
+      - name: Update pyproject.toml
+        run: sed -i "s/^version = \".*\"/version = \"${{ steps.get_version.outputs.new_tag }}\"/" pyproject.toml
+        shell: bash
+
       - name: Commit version update
         uses: EndBug/add-and-commit@v9
         with:
           author_name: GitHub Actions
           author_email: actions@github.com
           message: 'Update __version__.py'
-          add: '["src/beeperpurge/__version__.py", "src/beeperpurge/__init__.py"]'
+          add: '["src/beeperpurge/__version__.py",
+                "src/beeperpurge/__init__.py",
+                "pyproject.toml"]'
 
       - name: Get version from package # We intentionally take the version from the updated file and not run github-tag-action again
         id: get_version_from_file

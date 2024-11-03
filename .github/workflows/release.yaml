@@ -5,11 +5,13 @@ on:
     tags:
       - 'v*.*.*'
 
+  workflow_dispatch:
+
 jobs:
   python-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -41,10 +43,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Get version from tag
-        id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-        
+      - name: Get version from package # We intentionally take the version from the updated file and not run github-tag-action again
+        id: get_version_from_file
+        run: |
+          PACKAGE_VERSION=$(python -c "from src.beeperpurge.__version__ import __version__; print(__version__)")
+          echo "version=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -52,7 +56,7 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=${{ steps.get_version.outputs.version }}
+            type=raw,value=${{ steps.get_version_from_file.outputs.version }}
             type=raw,value=latest
             
       - name: Set up Docker Buildx

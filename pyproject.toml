@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "beeperpurge"
-version = "0.1.0" # This is just the initial version, it will be updated dynamically
+version = "v1.0.6" # This is just the initial version, it will be updated dynamically
 description = "High-throughput parallel file system cleaner"
 readme = "README.md"
 requires-python = ">=3.9"

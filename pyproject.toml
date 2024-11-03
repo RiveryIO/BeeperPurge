@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "beeperpurge"
-version = "v1.0.10"
+version = "v1.0.11"
 description = "High-throughput parallel file system cleaner"
 readme = "README.md"
 requires-python = ">=3.9"

@@ -1,18 +1,14 @@
-name: Python Tests
+name: Python Tests on Release branch (main)
 
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - 'main'
-    paths:
-      - 'src/**'
-      - 'tests/**'
-      - 'pyproject.toml'
-      - '.github/workflows/python-ci-main.yml'
+      - main
 
 jobs:
   test:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       matrix:

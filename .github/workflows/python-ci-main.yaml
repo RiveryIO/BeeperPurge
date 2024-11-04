@@ -33,9 +33,10 @@ jobs:
 
     - name: Calculate coverage
       if: matrix.python-version == '3.11'
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         dry_run: "false"
+        fail_ci_if_error: "true"
+        verbose: "true"
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      continue-on-error: true

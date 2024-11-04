@@ -45,9 +45,10 @@ jobs:
 
     - name: Calculate coverage
       if: matrix.python-version == '3.11' && github.event_name != 'pull_request'
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         dry_run: "true"
+        fail_ci_if_error: "false"
+        verbose: "false"
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      continue-on-error: true

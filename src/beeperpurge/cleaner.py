@@ -65,6 +65,7 @@ class HighThroughputDirCleaner:
                 self.process_file_chunk(chunk)
 
             self.update_stats(dirs_processed=1)
+            self.logger.debug(f"Processed directory: {directory}")
 
         except OSError as e:
             log_with_context(self.logger, 'error', "Error accessing directory", {
@@ -132,6 +133,7 @@ class HighThroughputDirCleaner:
                 # Start new tasks if we have capacity
                 while len(futures) < self.max_workers and not self.dirs_queue.empty():
                     directory = self.dirs_queue.get()
+                    self.logger.debug(f"Queuing directory for processing: {directory}")
                     futures.add(executor.submit(self.process_directory, directory))
                 
                 # Check if we're done
@@ -180,7 +182,12 @@ def main() -> None:
                       help='Perform a dry run without purging files')
     parser.add_argument('--chunk-size', type=int, default=1000,
                       help='Number of files to process in each chunk')
+    parser.add_argument('--log-level', type=str, default='info',
+                      help='Logging level (debug, info, warning, error, critical)')
     args = parser.parse_args()
+
+    # Set the log level
+    setup_logging(args.log_level)
 
     cleaner = HighThroughputDirCleaner(
         root_path=args.path,

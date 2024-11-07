@@ -88,7 +88,7 @@ class HighThroughputDirCleaner:
                         try:
                             file_path.unlink()
                             self.update_stats(files_purged=1)
-                            self.logger.info(f"File purged", extra={
+                            self.logger.debug(f"File purged", extra={
                                 'file_path': str(file_path),
                                 'age_hours': age_hours
                             })
@@ -99,7 +99,7 @@ class HighThroughputDirCleaner:
                             })
                             self.update_stats(errors=1)
                     else:
-                        self.logger.info("File marked for purging (dry run)", extra={
+                        self.logger.debug("File marked for purging (dry run)", extra={
                             'file_path': str(file_path),
                             'age_hours': age_hours
                         })

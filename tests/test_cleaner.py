@@ -6,7 +6,7 @@ from beeperpurge.cleaner import HighThroughputDirCleaner
 
 def test_dry_run_preserves_files(sample_file_tree):
     """Test that dry run mode doesn't delete any files."""
-    print("\nDebug file listing:")
+    # print("\nDebug file listing:")
     total_files = 0
     old_files = 0
     current_time = time.time()
@@ -16,9 +16,9 @@ def test_dry_run_preserves_files(sample_file_tree):
         age_hours = (current_time - mtime) / 3600
         is_old = age_hours > 36
         old_files += 1 if is_old else 0
-        print(f"File: {file_path.name}")
-        print(f"  Age: {age_hours:.1f} hours")
-        print(f"  Is Old: {is_old}")
+        # print(f"File: {file_path.name}")
+        # print(f"  Age: {age_hours:.1f} hours")
+        # print(f"  Is Old: {is_old}")
 
     print(f"\nSummary:")
     print(f"Total files found: {total_files}")

@@ -1,66 +1,70 @@
 import os
+import random
 import time
 from pathlib import Path
 import pytest
 import logging
 
+
+def create_sample_file(path: Path, hours_old: int, is_symlink=False, target=None, permissions=0o644) -> None:
+    """Creates a file with specified attributes and modification time."""
+    path.touch()
+    mod_time = time.time() - (hours_old * 3600)
+    os.utime(path, (mod_time, mod_time))
+    
+    if is_symlink and target:
+        path.unlink()  # Remove the regular file to create a symlink
+        path.symlink_to(target)
+    else:
+        path.chmod(permissions)
+
+def create_large_file_tree(root_path: Path, num_files: int = 50000) -> None:
+    """Create a nested directory structure with files of different ages, types, and permissions."""
+    root_path.mkdir(parents=True, exist_ok=True)
+    
+    # Define the main structure
+    num_main_dirs = 5
+    num_sub_dirs_per_main = 3
+    files_per_sub_dir = num_files // (num_main_dirs * num_sub_dirs_per_main)
+    
+    for i in range(num_main_dirs):
+        main_dir = root_path / f"main_dir_{i}"
+        main_dir.mkdir(exist_ok=True)
+        
+        for j in range(num_sub_dirs_per_main):
+            sub_dir = main_dir / f"sub_dir_{j}"
+            sub_dir.mkdir(exist_ok=True)
+            
+            for k in range(files_per_sub_dir):
+                file_path = sub_dir / f"file_{k}.txt"
+                hours_old = random.choice([0, 10, 30, 50])
+                create_sample_file(file_path, hours_old)
+
+    # Add a deeply nested directory structure for complexity
+    extra_nested = root_path / "extra" / "nested" / "deep_nested"
+    extra_nested.mkdir(parents=True, exist_ok=True)
+    deep_file = extra_nested / "deep_file.txt"
+    create_sample_file(deep_file, 20)
+
+    # Create a symlink to test symlink handling
+    symlink_target = root_path / "target.txt"
+    create_sample_file(symlink_target, 0)  # Target file for symlink
+    symlink = root_path / "link.txt"
+    create_sample_file(symlink, 0, is_symlink=True, target=symlink_target)
+    # Create a symlink somewhere deep in the tree
+    symlinkdeep = extra_nested / "link.txt"
+    create_sample_file(symlinkdeep, 0, is_symlink=True, target=deep_file)
+
+
+    # Create a read-only file for permission testing
+    readonly_file = root_path / "readonly.txt"
+    create_sample_file(readonly_file, 48, permissions=0o444)
+
 @pytest.fixture
 def sample_file_tree(tmp_path):
-    """Create a sample file tree for testing.
-    
-    Creates:
-    - Files of different ages
-    - Nested directory structure
-    - Symlinks
-    - Files with different permissions
-    """
-    # Create base test directories
-    root = tmp_path / "test_data"
-    root.mkdir()
-    nested = root / "nested"
-    nested.mkdir()
-    deep_nested = nested / "deep"
-    deep_nested.mkdir()
-    
-    # Current time for age calculations
-    current_time = time.time()
-    
-    # Create files of different ages
-    files = {
-        # Regular files
-        root / "new.txt": 1,           # 1 hour old
-        root / "old.txt": 48,          # 48 hours old
-        root / "borderline.txt": 35,   # Just under 36 hours
-        
-        # Nested files
-        nested / "nested_old.txt": 72,
-        nested / "nested_new.txt": 12,
-        
-        # Deep nested files
-        deep_nested / "deep_old.txt": 96,
-        deep_nested / "deep_new.txt": 2,
-    }
-    
-    # Create and timestamp the files
-    for file_path, hours_old in files.items():
-        file_path.touch()
-        old_time = current_time - (hours_old * 3600)
-        os.utime(file_path, (old_time, old_time))
-    
-    # Create a symlink
-    symlink_target = root / "target.txt"
-    symlink_target.touch()
-    symlink = root / "link.txt"
-    symlink.symlink_to(symlink_target)
-    
-    # Create a read-only file
-    readonly = root / "readonly.txt"
-    readonly.touch()
-    old_time = current_time - (48 * 3600)
-    os.utime(readonly, (old_time, old_time))
-    readonly.chmod(0o444)
-    
-    return root
+    """Fixture to create a large, nested sample file tree for testing."""
+    create_large_file_tree(tmp_path)
+    return tmp_path
 
 @pytest.fixture
 def mock_logger():

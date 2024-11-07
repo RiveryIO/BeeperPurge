@@ -27,6 +27,7 @@ class HighThroughputDirCleaner:
             'files_to_purge': 0,
             'files_purged': 0,
             'dirs_processed': 0,
+            'symlinks_skipped': 0,
             'errors': 0
         }
         self.stats_lock = threading.Lock()
@@ -48,9 +49,14 @@ class HighThroughputDirCleaner:
             with os.scandir(directory) as entries:
                 for entry in entries:
                     try:
-                        if entry.is_file(follow_symlinks=False):
+                        if entry.is_symlink():
+                            # Update stats for skipped symlink
+                            self.update_stats(symlinks_skipped=1)
+                        elif entry.is_file(follow_symlinks=False):
+                            # Add regular file to file_paths
                             file_paths.append(Path(entry.path))
                         elif entry.is_dir(follow_symlinks=False):
+                            # Queue regular directory for further processing
                             self.dirs_queue.put(Path(entry.path))
                     except OSError as e:
                         log_with_context(self.logger, 'error', "Error processing entry", {
@@ -89,7 +95,7 @@ class HighThroughputDirCleaner:
                         try:
                             file_path.unlink()
                             self.update_stats(files_purged=1)
-                            self.logger.info(f"File purged", extra={
+                            self.logger.debug(f"File purged", extra={
                                 'file_path': str(file_path),
                                 'age_hours': age_hours
                             })
@@ -100,7 +106,7 @@ class HighThroughputDirCleaner:
                             })
                             self.update_stats(errors=1)
                     else:
-                        self.logger.info("File marked for purging (dry run)", extra={
+                        self.logger.debug("File marked for purging (dry run)", extra={
                             'file_path': str(file_path),
                             'age_hours': age_hours
                         })
@@ -163,6 +169,7 @@ class HighThroughputDirCleaner:
             'files_to_purge': self.stats['files_to_purge'],
             'files_purged': self.stats['files_purged'],
             'dirs_processed': self.stats['dirs_processed'],
+            'symlinks_skipped': self.stats['symlinks_skipped'],
             'errors': self.stats['errors'],
             'processing_rate': round(self.stats['files_processed'] / duration, 2) if duration > 0 else 0
         })

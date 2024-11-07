@@ -50,7 +50,7 @@ def test_json_formatter_with_error():
             lineno=1,
             msg="Error occurred",
             args=(),
-            exc_info=sys.exc_info()  # This is the key change
+            exc_info=sys.exc_info()
         )
     
     formatted = formatter.format(record)

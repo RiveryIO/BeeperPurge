@@ -51,6 +51,10 @@ def create_large_file_tree(root_path: Path, num_files: int = 50000) -> None:
     create_sample_file(symlink_target, 0)  # Target file for symlink
     symlink = root_path / "link.txt"
     create_sample_file(symlink, 0, is_symlink=True, target=symlink_target)
+    # Create a symlink somewhere deep in the tree
+    symlinkdeep = extra_nested / "link.txt"
+    create_sample_file(symlinkdeep, 0, is_symlink=True, target=deep_file)
+
 
     # Create a read-only file for permission testing
     readonly_file = root_path / "readonly.txt"

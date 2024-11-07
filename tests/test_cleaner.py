@@ -48,3 +48,22 @@ def test_dry_run_preserves_files(sample_file_tree):
     
     assert initial_count == final_count, "Dry run should not delete any files"
     assert cleaner.stats['files_to_purge'] > 0, "Should identify files to purge"
+
+def test_skips_symlinks(sample_file_tree):
+    """Test that the cleaner skips symlinked files."""
+    # Locate the symlink in the sample file tree
+    symlink = sample_file_tree / "link.txt"
+    assert symlink.is_symlink(), "Expected 'link.txt' to be a symlink."
+
+    cleaner = HighThroughputDirCleaner(
+        root_path=sample_file_tree,
+        max_age_hours=36,
+        dry_run=False # For this test we mustn't enable dry_run. We are testing that symlinks are skipped by making sure it's not deleted. So enabling dry run will cause it to never delete anyway.
+    )
+
+    # Run cleaner
+    cleaner.clean()
+
+    # Verify that the symlink was not processed
+    assert symlink.exists(), "Symlink should not be deleted."
+    assert cleaner.stats['symlinks_skipped'] > 0, "Cleaner should skip symlinked files."

@@ -3,6 +3,22 @@ import logging
 import pytest
 from beeperpurge.logging import JsonFormatter, setup_logging, log_with_context
 
+@pytest.fixture
+def mock_logger():
+    """Fixture to create a logger with a mock handler for capturing logs."""
+    logger = setup_logging("test_logger", "DEBUG")  # Default to DEBUG for capturing all logs
+    log_records = []
+
+    class ListHandler(logging.Handler):
+        def emit(self, record):
+            log_records.append(record)
+
+    list_handler = ListHandler()
+    list_handler.setFormatter(JsonFormatter())
+    logger.addHandler(list_handler)
+    
+    return logger, log_records
+
 def test_json_formatter():
     """Test JSON formatter produces valid JSON with expected fields."""
     formatter = JsonFormatter()
@@ -68,16 +84,16 @@ def test_setup_logging():
     assert len(logger.handlers) == 2
     
     # Check handler levels
-    has_info = False
+    has_debug = False
     has_error = False
     for handler in logger.handlers:
-        if handler.level == logging.INFO:
-            has_info = True
+        if handler.level == logging.DEBUG:
+            has_debug = True
         if handler.level == logging.ERROR:
             has_error = True
     
-    assert has_info, "Should have INFO level handler"
-    assert has_error, "Should have ERROR level handler"
+    assert has_debug, "Should have DEBUG level handler for stdout"
+    assert has_error, "Should have ERROR level handler for stderr"
     
     # Check formatters
     for handler in logger.handlers:
@@ -99,19 +115,44 @@ def test_log_with_context(mock_logger):
     
     assert hasattr(record, "extra_fields")
     assert record.extra_fields == extra
-    assert record.message == "Test message"
+    assert record.getMessage() == "Test message"
     assert record.levelname == "INFO"
 
 def test_log_levels(mock_logger):
     """Test different log levels."""
     logger, records = mock_logger
     
-    # We only test levels that are at or above INFO since that's our handler configuration
-    levels = ["info", "warning", "error", "critical"]
+    levels = ["debug", "info", "warning", "error", "critical"]
     
     for level in levels:
         log_with_context(logger, level, f"Test {level}")
     
+    # All log levels should be captured in DEBUG mode
     assert len(records) == len(levels), f"Expected {len(levels)} records, got {len(records)}"
     for record, level in zip(records, levels):
         assert record.levelname == level.upper()
+
+def test_log_level_info_only():
+    """Test that only INFO level and above are logged when log level is set to INFO."""
+    logger = setup_logging("test_logger", "INFO")
+    log_records = []
+
+    class ListHandler(logging.Handler):
+        def emit(self, record):
+            log_records.append(record)
+
+    list_handler = ListHandler()
+    list_handler.setFormatter(JsonFormatter())
+    logger.addHandler(list_handler)
+    
+    # Log messages of all levels
+    log_with_context(logger, "debug", "This debug message should not appear.")
+    log_with_context(logger, "info", "This info message should appear.")
+    log_with_context(logger, "warning", "This warning message should appear.")
+    log_with_context(logger, "error", "This error message should appear.")
+    
+    # Only INFO and higher levels should be recorded
+    assert len(log_records) == 3, f"Expected 3 records, got {len(log_records)}"
+    assert log_records[0].levelname == "INFO"
+    assert log_records[1].levelname == "WARNING"
+    assert log_records[2].levelname == "ERROR"

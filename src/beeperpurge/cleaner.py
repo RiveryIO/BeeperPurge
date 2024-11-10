@@ -71,8 +71,9 @@ class HighThroughputDirCleaner:
                 self.process_file_chunk(chunk)
 
             self.update_stats(dirs_processed=1)
-            self.logger.debug(f"Processed directory: {directory}")
-
+            log_with_context(self.logger, 'debug', "Processed directory: ", {
+                            'path': str(directory)
+                        })
         except OSError as e:
             log_with_context(self.logger, 'error', "Error accessing directory", {
                 'directory': str(directory),

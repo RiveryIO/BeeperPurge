@@ -1,7 +1,5 @@
 #!/bin/bash
-# This script runs Ruff for linting without fixing issues
-
-# Run Ruff to check for issues only
+# Run Ruff to check for linting and formating issues
 echo "Running Ruff to check for issues"
 output="$(ruff check .)"
 exit_code=$?

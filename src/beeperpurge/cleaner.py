@@ -5,13 +5,12 @@ import queue
 import threading
 from pathlib import Path
 import argparse
-from typing import Dict
-import logging
 
 from .logging import setup_logging, log_with_context
 
 class HighThroughputDirCleaner:
-    def __init__(self, root_path: str, max_age_hours: float, max_workers: int = 8, dry_run: bool = True, chunk_size: int = 1000):
+    def __init__(self, root_path: str, max_age_hours: float, max_workers: int = 8, dry_run: bool = True,
+                 chunk_size: int = 1000):
         """Initialize the directory cleaner."""
         self.root_path = Path(root_path)
         self.max_workers = max_workers
@@ -20,7 +19,7 @@ class HighThroughputDirCleaner:
         self.cutoff_time = time.time() - (max_age_hours * 3600)
         self.dirs_queue: queue.Queue = queue.Queue()
         self.chunk_size = chunk_size
-        
+
         # Statistics
         self.stats = {
             'files_processed': 0,
@@ -31,7 +30,7 @@ class HighThroughputDirCleaner:
             'errors': 0
         }
         self.stats_lock = threading.Lock()
-        
+
         # Setup logging
         self.logger = setup_logging()
 
@@ -90,12 +89,12 @@ class HighThroughputDirCleaner:
                 age_hours = (time.time() - stat.st_mtime) / 3600
                 if stat.st_mtime < self.cutoff_time:
                     self.update_stats(files_to_purge=1)
-                    
+
                     if not self.dry_run:
                         try:
                             file_path.unlink()
                             self.update_stats(files_purged=1)
-                            self.logger.debug(f"File purged", extra={
+                            self.logger.debug("File purged", extra={
                                 'file_path': str(file_path),
                                 'age_hours': age_hours
                             })
@@ -128,28 +127,28 @@ class HighThroughputDirCleaner:
             'dry_run': self.dry_run,
             'chunk_size': self.chunk_size
         })
-        
+
         # Start with root directory
         self.dirs_queue.put(self.root_path)
-        
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             futures = set()
-            
+
             while True:
                 # Start new tasks if we have capacity
                 while len(futures) < self.max_workers and not self.dirs_queue.empty():
                     directory = self.dirs_queue.get()
                     self.logger.debug(f"Queuing directory for processing: {directory}")
                     futures.add(executor.submit(self.process_directory, directory))
-                
+
                 # Check if we're done
                 if not futures and self.dirs_queue.empty():
                     break
-                
+
                 # Remove completed futures
                 done = {f for f in futures if f.done()}
                 futures -= done
-                
+
                 # Handle any exceptions from completed futures
                 for future in done:
                     try:

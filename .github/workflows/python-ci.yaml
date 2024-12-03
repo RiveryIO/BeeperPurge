@@ -44,8 +44,7 @@ jobs:
         pytest -v
 
     - name: Run linter
-      run : |
-        ./run_linter.sh
+      run : sh ./run_linter.sh
 
     - name: Calculate coverage
       if: matrix.python-version == '3.11' && github.event_name != 'pull_request'

@@ -29,6 +29,7 @@ dev = [
     "pytest>=7.0",
     "pytest-cov",
     "pytest-mock",
+    "ruff"
 ]
 
 [tool.pytest.ini_options]
@@ -48,4 +49,28 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
     "pass",
+]
+
+[tool.ruff]
+# Set line length to 120
+line-length = 120
+# Exclude directories
+exclude = [".venv", "venv", "build"]
+
+[tool.ruff.lint]
+# Select rules to enforce- autopep8 and flake8 equivalents only.
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F"   # pyflakes
+]
+# Ignore specific rules
+ignore = [
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in public package
+    "D400",  # First line should end with a period
+    "D401",  # First line should be in imperative mood
+    "D200",  # One-line docstring should fit on one line with quotes
+    "D205",  # 1 blank line required between summary line and description
+    "D210",  # No whitespaces allowed surrounding docstring text
 ]

@@ -1,0 +1,43 @@
+name: Python Tests
+
+on:
+  workflow_dispatch:
+
+
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ".[dev]"
+
+    - name: Run tests
+      run: |
+        pytest -v
+
+    - name: Run linter
+      run : sh ./run_linter.sh
+
+    - name: Calculate coverage
+      if: matrix.python-version == '3.11' && github.event_name != 'pull_request'
+      uses: codecov/codecov-action@v4
+      with:
+        dry_run: "true"
+        fail_ci_if_error: "false"
+        verbose: "false"
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
